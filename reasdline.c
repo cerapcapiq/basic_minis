@@ -1,14 +1,30 @@
- #include <stdio.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/types.h>
+#define _XOPEN_SOURCE 600
+#include <sys/wait.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <string.h>
 #include <signal.h>
 
-char *lineptr;
+//char *lineptr;
+
+char* ft_join ( char *s1,  char *s2)
+{
+	char *result = malloc(strlen(s1) + strlen(s2) + 1);
+
+	if (result)
+	{
+		strcpy(result, s1);
+		strcat(result, s2);
+	}
+	return result;
+}
+
 
 void delete(char string[], char substr[])
 {
@@ -38,7 +54,7 @@ void ft_echo(char *lineptr)
 
 void normal_ls(char *lineptr)
 {
-	char cmd[] = "/bin/ls";
+	char cmd[] = "usr//bin/ls";
 
 	char *arg[] = {"ls", NULL};
 	char *env[] = {NULL};
@@ -59,7 +75,7 @@ void built_inwc(char *lineptr)
 	int res;
 
 	char cmd[] = "/usr/bin/wc";
-	char *arg[] = {"/usr/bin/wc",lineptr, NULL};
+	char *arg[] = {"wc",lineptr, NULL};
 	char *env[] = {NULL};
 
 	int pip = (*cmd);
@@ -69,7 +85,7 @@ void built_inwc(char *lineptr)
 	{
 		printf("%d\n", pid);
 		execve(cmd, arg, env);
-		kill(0, SIGKILL);
+		//kill(0, SIGKILL);
 		
 	}
 	if (waitpid(pid, &res, 0) == -1)
@@ -113,39 +129,13 @@ void built_incat(char *path)
 	{
 		printf("if inside child process should be zero => %d\n", pid);
 		execve(cmd, arg, env);
-		kill(0, SIGKILL);
+		//kill(0, SIGKILL);
 		
 	}
 
 	printf("error");
 
 }
-
-int built_inls(char *lineptr)
-{
-	int fd;
-	int fds[2];
-	int res;
-
-	char cmd[] = "/bin/ls";
-	char *arg[] = {"ls", NULL};
-	char *env[] = {NULL};
-
-	int pip = (*cmd);
-	int pid = fork();
-
-	if (!pid)
-	{
-		printf("%d\n", pid);
-		execve(cmd, arg, env);
-		kill(0, SIGKILL);
-		
-	}
-	if (waitpid(pid, &res, 0) == -1)
-	printf("error");
-  return WIFEXITED(res) && WEXITSTATUS(res);
-}
-
 
 void ft_cat(char *lineptr) 
 {
@@ -161,8 +151,72 @@ void ft_wc(char *lineptr)
     
 }
 
+void getenv_ls(char *lineptr)
+{
+char    *str;
+char ** res  = NULL;
+char *  p ;
+int n_spaces = 0, i;
+
+char *path;
+
+ path = getenv("PATH");
+    str = strdup(path);
+
+
+
+p    = strtok (str, ":");
+
+while (p) {
+  res = realloc (res, sizeof (char*) * ++n_spaces);
+
+  if (res == NULL)
+    exit (-1);
+
+  res[n_spaces-1] = p;
+
+  p = strtok (NULL, ":");
+}
+
+res = realloc (res, sizeof (char*) * (n_spaces+1));
+res[n_spaces] = 0;
+for (i = 0; i < (n_spaces); ++i)
+{
+	res[i] = ft_join(res[i], "/");
+  printf ("res[%d] = %s\n", i, res[i]);
+}
+
+
+char *cmd;
+char *cpy;
+char *argv[] = {lineptr, NULL};
+char *env[] = {NULL};
+
+	int pip = (*cmd);
+	int pid = fork();
+
+	if (!pid)
+	{
+		printf("%d\n", pid);
+		for (i = 0; i < (n_spaces); i++)
+		{
+			cpy = strcat(res[i], lineptr);
+			char *cmd = cpy;
+		if (execve(cmd, argv, env))
+		//	printf("this is the %s", cmd);
+		printf ("res[%d] = %s\n", i, res[i]);
+	
+	
+		
+	}
+	free(res);
+}
+}
+
+
 int main()
 {
+	char *lineptr;
   char s[100];
 
     while (1)
@@ -170,7 +224,7 @@ int main()
         lineptr = readline("minishell>");
         if (strlen(lineptr)>0) {add_history(lineptr);}
         if (!strcmp(lineptr, "cd")) {chdir("..");printf("kekl\n");}
-     if (!strcmp(lineptr, "ls")) {built_inls(lineptr);}
+     if (!strcmp(lineptr, "ls")) {getenv_ls(lineptr);}
         if (strstr(lineptr, "wc")) {ft_wc(lineptr);}
         if (strstr(lineptr, "cat ")) {ft_cat(lineptr);}
       //if (!strcmp(lineptr, "ls")) {normal_ls(lineptr);} //  without fork
