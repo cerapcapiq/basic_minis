@@ -9,6 +9,13 @@
 
 char *lineptr;
 
+char *ft_advance(char *str)
+{
+
+  str++;
+  return (str);
+}
+
 void ft_quote(char *lineptr)
 {
   int i;
@@ -22,7 +29,8 @@ void ft_quote(char *lineptr)
   while (str[j] != '\0')
   {
     if (str[j] == '"')
-      j++;
+     str = ft_advance(str);
+     //j++;
    write(1, &str[j], 1);
    j++;
   }
@@ -49,22 +57,24 @@ void delete(char string[], char substr[])
   string[i] = '\0'; 
 }
 
+
+
 void ft_echo(char *lineptr) 
 {
   char *str;
     delete(lineptr, "echo ");
-   if (strstr(lineptr, "\"")) {ft_quote(lineptr);
-   printf("inside");}
-  else 
-  printf("%s 2 echo \n", lineptr);
+
+  str = lineptr;
+  int j = 0;
+
+  while (str[j] != '\0')
+  {
+    if (str[j] == '"')
+      str = ft_advance(str);
+    write(1, &str[j], 1);
+    j++;
+  }
 }
-
-
-
-
-
-
-
 
 char *ft_var(char * lineptr)
 {
@@ -92,8 +102,8 @@ int main()
     {
         lineptr = readline("minishell>");
         if (strlen(lineptr)>0) {add_history(lineptr);}
-        if (strstr(lineptr, "echo ") || (strstr(lineptr, "echo ") && strstr(lineptr, "\""))) { ft_echo(lineptr);}
-        if (strstr(lineptr, "\"") && strstr(lineptr, "echo ") == 0) {ft_quote(lineptr);}
+       if (strstr(lineptr, "echo ") || (strstr(lineptr, "echo ") && strstr(lineptr, "\""))) { ft_echo(lineptr);}
+       // if (strstr(lineptr, "\"") && strstr(lineptr, "echo ") == 0) {ft_quote(lineptr);}
         if (strstr(lineptr, "=")) { str = ft_var(lineptr)
 ;
         printf("arg return is %s\n", str);
