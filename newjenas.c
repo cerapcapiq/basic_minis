@@ -1,59 +1,43 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <unistd.h>
-#include <string.h>
+#include "link.h"
 
-char *nodedata;
-
-struct node
-{
-  char *data;
-  struct node *nxtpointer;
-};
-
-struct node *startnode;
-
-static void createList(int nodes);
-static void display_node();
-void searchList();
-
-
+static void createList(int nodes, struct node * head);
+ static void display_node();
+struct node *head;
 int main()
 {
   int numbernode;
+  char *lineptr;
 
   printf ("how many arg");
   scanf("%d", &numbernode);
-
-  
-  createList(numbernode);
+  createList(numbernode, head);
   display_node();
- 
+  lineptr = readline("delete what number : ?");
+  delete_node(lineptr, head);
+//else 
+//printf("not yet\n");
+display_node();
 
 }
 
-static void createList(int nodes)
+static void createList(int nodes, struct node *head)
 {
   struct node *new;
   struct node *buffer;
 
-  //int nodedata;
   int nodecounter;
-
   //alloc memory for first node
-  startnode = (struct node*)malloc(sizeof(struct node));
+ head = (struct node*)malloc(sizeof(struct node));
 
 
   printf("input data for arg 1: ");
   
-  nodedata = readline("env var =" );
+ char * nodedata = readline("env var =" );
 
   
-  startnode->data = nodedata; // save input from scanf to startnode
-  startnode->nxtpointer = NULL; // next pointer to null (as there is no next for now)
-  buffer = startnode;  // keep address to link to next node
+  head->data = nodedata; // save input from scanf to head
+  head->nxtpointer = NULL; // next pointer to null (as there is no next for now)
+  buffer = head;  // keep address to link to next node
 
   for(nodecounter = 2; nodecounter<=nodes; nodecounter++)
         {
@@ -82,61 +66,52 @@ static void createList(int nodes)
 
         }
     
-   searchList();
+    searchList(head);
 }
 
 
-static void display_node()
+/* void display_node()
 {
+    printf("entering diplay ...\n");
     struct node *buffer;
-    buffer = startnode;
-    //exit if it is empty
-    if(buffer == NULL){
-        printf("List is empyt");
-
-    }
-    else{
+    int i = 1;
+    
+        buffer = head;
         //check if the current node is empty
+        if (buffer == NULL)
+            buffer = buffer->nxtpointer;
         while (buffer != NULL)
         {
             //PRINT THE DATA OF CRRENT NODE
-            printf("DATA: %s \n", buffer->data);
+            printf("DATA %d is : %s \n",i, buffer->data);
             //go to the next node
             buffer = buffer->nxtpointer;
-        }
-    }
-}
-
-void searchList()
-    {
-        char *contactName;
-        int i = 1;
-
-        contactName = readline("what is : ");
-        struct node *temp = startnode;
-        printf("\nSearch Contact : \n");
-        while (temp != NULL)
-        {
-            if (strcmp(temp->data, contactName) == 0)
-            {
-                printf("Contact Name : %s\n",temp->data);
-                printf("saved in the %d th place\n", i);
-            }
-            temp = temp->nxtpointer;
             i++;
         }
-        if (strstr(contactName, "unset"))
-        {
-            
-        }
     }
 
 
+*/
 
-
-
-
-
-
+void display_node()
+{
+    printf("ada\n");
+    struct node* temp; // Creating a temporary pointer to
+                       // the structure
+    temp = head; // temp points to head;
+    if (temp == NULL)
+        printf("NULL\n\n");
+    while (temp != NULL) {
+        if (temp->nxtpointer == NULL) {
+            printf(" %s->NULL", temp->data);
+        }
+        else {
+            printf(" %s->", temp->data);
+        }
+        temp = temp->nxtpointer; // Traversing the List till end
+    }
+    printf("\n");
+    return;
+}
 
 
